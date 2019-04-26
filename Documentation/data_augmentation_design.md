@@ -31,10 +31,12 @@ Here the first number is the x coordinate of point one, the second number is the
 <a id="figure-2">
     <figure class="image">
         <a href="https://tspp.files.wordpress.com/2009/10/cvcoordinate.png">
-        <img src="https://tspp.files.wordpress.com/2009/10/cvcoordinate.png" alt="drawing" width="150">
-        </a><figcaption>Figure 2<sup><a href="#ref-2">[2]</a></sup>: Coordinate system used in WFLW dataset and OpenCV.</figcaption>
+            <img src="https://tspp.files.wordpress.com/2009/10/cvcoordinate.png" alt="drawing" width="150">
+        </a>
     </figure>
 </a>
+
+Figure 2<sup><a href="#ref-2">[2]</a></sup>: Coordinate system used in WFLW dataset and OpenCV.
 
 The next entries are:
 
@@ -53,10 +55,12 @@ The next entries are:
 <a id="figure-3">
     <figure class="image">
         <a href="WFLW.png">
-        <img src="WFLW.png" alt="drawing" width="150">
-        </a><figcaption>Figure 3<sup><a href="#ref-3">[3]</a></sup>: Examples of Large Pose, Expression, Illumination, Makeup, Occlusion and Blur in the WFLW dataset.</figcaption>
+            <img src="WFLW.png" alt="drawing" width="150">
+        </a>
     </figure>
 </a>
+
+Figure 3<sup><a href="#ref-3">[3]</a></sup>: Examples of Large Pose, Expression, Illumination, Makeup, Occlusion and Blur in the WFLW dataset.
 
 ## Design
 
