@@ -11,10 +11,11 @@ For information on how to use the data augmentation scripts, refer to [data_augm
 The WFLW dataset contains 7500 training images and 2500 test images. Each image contains one face that is annotated with 98 different landmarks. These landmarks can be seen in [figure 1](#figure-1)
 
 <a id="figure-1">
-    <figure class="image">
+    <figure>
         <a href="https://wywu.github.io/projects/LAB/support/WFLW_annotation.png">
-        <img src="https://wywu.github.io/projects/LAB/support/WFLW_annotation.png" alt="drawing" width="150">
-        </a><figcaption>Figure 1<sup><a href="#ref-1">[1]</a></sup>: Image showing the landmark locations in the WFLW dataset.</figcaption>
+            <img src="https://wywu.github.io/projects/LAB/support/WFLW_annotation.png" alt="drawing" width="150">
+        </a>
+        <figcaption>Figure 1<sup><a href="#ref-1">[1]</a></sup>: Image showing the landmark locations in the WFLW dataset.</figcaption>
     </figure>
 </a>
 
