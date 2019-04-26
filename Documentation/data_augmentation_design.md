@@ -15,11 +15,10 @@ The WFLW dataset contains 7500 training images and 2500 test images. Each image 
         <a href="https://wywu.github.io/projects/LAB/support/WFLW_annotation.png">
             <img src="https://wywu.github.io/projects/LAB/support/WFLW_annotation.png" alt="drawing" width="150">
         </a>
-        <figcaption>Figure 1<sup><a href="#ref-1">[1]</a></sup>: Image showing the landmark locations in the WFLW dataset.</figcaption>
     </figure>
 </a>
 
-
+Figure 1<sup><a href="#ref-1">[1]</a></sup>: Image showing the landmark locations in the WFLW dataset.
 
 The WFLW images are contained in the subdirectories of the `WFLW_images` directory. The annotations of the images are contained in `list_98pt_rect_attr_test.txt` (test images) and `list_98pt_rect_attr_train.txt` (training images) along with the path to the corresponding images relative to the WFLW_images directory. For instance: This is the first line of `list_98pt_rect_attr_test.txt`:
 
