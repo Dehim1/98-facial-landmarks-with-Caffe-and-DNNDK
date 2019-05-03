@@ -4,7 +4,6 @@ import cv2
 import os
 import copy
 import h5py
-import sklearn.utils
 import random
 # import resource
 
@@ -20,7 +19,7 @@ prefix_test = 'test_aug'
 prefix_train = 'train_aug'
 F_data = ReadHDF5(0, h5_dir, prefix_train)
 
-i = 5
+i = 21
 for d in F_data:
     print(d)
 img = F_data['data'][i]
@@ -30,7 +29,7 @@ if F_data['lossmult_98'][i] != 0.0:
 else:
     F_landmarks = F_data['landmarks_68'][i]
 lm = F_landmarks
-lm = np.reshape(lm, (len(F_landmarks)/2, 2))
+lm = np.reshape(lm, (len(F_landmarks)//2, 2))
 bbox = BBox(np.array([0, 0, 400, 400]))
 
 img = cv2.resize(img, (400, 400), interpolation=cv2.INTER_NEAREST)

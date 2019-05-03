@@ -72,15 +72,15 @@ Data augmentation procedes as follows:
 <a id="1-through-11"></a>
 
 1. A single full image is loaded at a time. This will reduce RAM usage.
-2. The images and landmarks are randomly mirrored or not mirrored around the central x line of the image.
-3. The images and landmarks are randomly rotated. Mirroring precedes rotation, because mirroring does not increase the size of the image, whereas rotation does.
-4. The bounding box of the face is determined from the facial landmarks. The bounding boxes provided by the WFLW dataset are not used, because at large angles of rotation, the provided bounding boxes are no longer accurate.
-5. The bounding boxes are randomly translated in both the x and the y dimensions. The image and landmarks are not translated, but the bounding box is. This has the same effect as translation of the image and landmarks, but is less compute intensive. The amount by which the bounding boxes are translated is defined as a percentage of the dimensions of the bounding box. This makes translation independent of image size.
-6. The bounding boxes are randomly scaled in both the x and the y dimensions.  The image and landmarks are not scaled, but the bounding box is. This has the same effect as scaling the image and landmarks, but is less compute intensive. Scaling is also done as a percentage of the dimensions of the bounding box.
-7. The bounding boxes are clipped. That is, if the bounding box has coordinates that lie outside the image, The bounding boxes are clipped, such that all coordinates lie inside the image.
-8. The landmarks are projected to the bounding box. The landmarks in the WFLW dataset are defined as coordinates in the original image. This will not mean anything to a neural network, because the network will not see the original image. Instead the coordinates should be defined by their position in the bounding box. To do this, the center position of the bounding box is subtracted from every landmark, after which the x and y coordinates of the landmarks are divided by the width and the height of the bounding box.
-9. The image is cropped by the bounding box.
-10. The cropped image is resized to the input dimensions of the neural network.
+2. The image and landmarks are randomly rotated.
+3. The bounding box of the face is determined from the facial landmarks. The bounding boxes provided by the WFLW dataset are not used, because at large angles of rotation, the provided bounding boxes are no longer accurate.
+4. The bounding boxes are randomly translated in both the x and the y dimensions. The image and landmarks are not translated, but the bounding box is. This has the same effect as translation of the image and landmarks, but is less compute intensive. The amount by which the bounding boxes are translated is defined as a percentage of the dimensions of the bounding box. This makes translation independent of image size.
+5. The bounding boxes are randomly scaled in both the x and the y dimensions.  The image and landmarks are not scaled, but the bounding box is. This has the same effect as scaling the image and landmarks, but is less compute intensive. Scaling is also done as a percentage of the dimensions of the bounding box.
+6. The bounding boxes are clipped. That is, if the bounding box has coordinates that lie outside the image, The bounding boxes are clipped, such that all coordinates lie inside the image.
+7. The landmarks are projected to the bounding box. The landmarks in the WFLW dataset are defined as coordinates in the original image. This will not mean anything to a neural network, because the network will not see the original image. Instead the coordinates should be defined by their position in the bounding box. To do this, the center position of the bounding box is subtracted from every landmark, after which the x and y coordinates of the landmarks are divided by the width and the height of the bounding box.
+8. The image is cropped by the bounding box.
+9. The cropped image is resized to the input dimensions of the neural network.
+10. The image and landmarks are randomly mirrored or not mirrored around the central x line of the image.
 11. The image and landmarks are written to arrays of images and landmarks.
 <a id="12-and-13"></a>
 
@@ -89,7 +89,7 @@ Data augmentation procedes as follows:
 
 To make data augmentation more manageable, the classes `BBox` and `LandmarkDataUnit` are created. A `LandmarkDataUnit` object holds the image, landmarks and bounding box during the augmentation process. The bounding box in turn is a `BBox` object. The `LandmarkDataUnit` class defines functions for mirroring, rotation, bounding box creation, translation, scaling, clipping, projecting the image landmarks to the bounding box and cropping. The translate and scale functions of the `LandmarkDataUnit` class make use of translate and scale functions defined in the `BBox` class.
 
-Steps [1 through 11](#1-through-11) are encapsulated in the `run` function of a `Threading.Thread` class `GenerateDataThread`. This will allow the data augmentation process to be executed across multiple threads, significantly accelerating this process.
+Steps [1 through 11](#1-through-11) are encapsulated in the `run` function of a `Threading.Thread` class `AugmentDataThread`. This will allow the data augmentation process to be executed across multiple threads, significantly accelerating this process.
 
 These threads are created in the `GenerateDataset` function. This function also handles the creation of the arrays that hold the images and landmarks as well as steps [12 and 13](#12-and-13).
 
