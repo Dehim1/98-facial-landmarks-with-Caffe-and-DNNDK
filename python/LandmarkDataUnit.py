@@ -77,12 +77,86 @@ class LandmarkDataUnit(object):
         self.landmarks_img = np.reshape(cv2.transform(self.landmarks_img, M), (N_landmarks, 2))
         return self
 
-    def Shear(self, shear):
-        shear_x = shear[0]*float(self.bbox.width)/float(self.bbox.height)
-        shear_y = shear[1]*float(self.bbox.height)/float(self.bbox.width)
-        M = np.array([[1.0+0.25*shear_x*shear_y, shear_x-0.25*shear_x*shear_y, 0.0], 
-                      [shear_y-0.25*shear_x*shear_y, 0.25*shear_x*shear_y+1.0, 0.0]])
-        M = np.array([[shear_x*shear_y+1.0, shear_x, 0.0], [shear_y, 1.0, 0.0]])
+    @classmethod
+    def MirrorLandmarks(cls, landmarks):
+        landmarks_mirror = np.zeros(landmarks.shape, np.float32)
+        if len(landmarks) == 98:
+            for i in range(33):
+                landmarks_mirror[i] = landmarks[32-i]
+            
+            for i in range(5):
+                landmarks_mirror[33+i] = landmarks[46-i]
+                landmarks_mirror[46-i] = landmarks[33+i]
+
+            for i in range(4):
+                landmarks_mirror[38+i] = landmarks[50-i]
+                landmarks_mirror[50-i] = landmarks[38+i]
+
+            for i in range(4):
+                landmarks_mirror[51+i] = landmarks[51+i]
+            
+            for i in range(5):
+                landmarks_mirror[55+i] = landmarks[59-i]
+
+            for i in range(5):
+                landmarks_mirror[60+i] = landmarks[72-i]
+                landmarks_mirror[72-i] = landmarks[60+i]
+            
+            for i in range(3):
+                landmarks_mirror[65+i] = landmarks[75-i]
+                landmarks_mirror[75-i] = landmarks[65+i]
+
+            for i in range(7):
+                landmarks_mirror[76+i] = landmarks[82-i]
+
+            for i in range(5):
+                landmarks_mirror[83+i] = landmarks[87-i]
+
+            for i in range(5):
+                landmarks_mirror[88+i] = landmarks[92-i]
+
+            for i in range(3):
+                landmarks_mirror[93+i] = landmarks[95-i]
+
+            for i in range(2):
+                landmarks_mirror[96+i] = landmarks[97-i]
+        elif len(landmarks) == 68:
+            for i in range(17):
+                landmarks_mirror[i] = landmarks[16-i]
+            
+            for i in range(5):
+                landmarks_mirror[17+i] = landmarks[26-i]
+                landmarks_mirror[26-i] = landmarks[17+i]
+
+            for i in range(4):
+                landmarks_mirror[27+i] = landmarks[27+i]
+
+            for i in range(5):
+                landmarks_mirror[31+i] = landmarks[35-i]
+
+            for i in range(4):
+                landmarks_mirror[36+i] = landmarks[45-i]
+                landmarks_mirror[45-i] = landmarks[36+i]
+
+            for i in range(2):
+                landmarks_mirror[40+i] = landmarks[47-i]
+                landmarks_mirror[47-i] = landmarks[40+i]
+            
+            for i in range(7):
+                landmarks_mirror[48+i] = landmarks[54-i]
+
+            for i in range(5):
+                landmarks_mirror[55+i] = landmarks[59-i]
+
+            for i in range(5):
+                landmarks_mirror[60+i] = landmarks[64-i]
+
+            for i in range(3):
+                landmarks_mirror[65+i] = landmarks[67-i]
+        else:
+            raise Exception('No mirror function for these landmarks defined.')
+        return landmarks_mirror
+
 
     # def Mirror(self) -> 'LandmarkDataUnit':
     def Mirror(self):
@@ -90,83 +164,14 @@ class LandmarkDataUnit(object):
         M = np.array([[-1.0, 0.0, w], [0.0, 1.0, 0.0]])
         self.img = cv2.warpAffine(self.img, M, (w, h))
         N_landmarks   = len(self.landmarks_img)
-        landmarks_mirror = np.reshape(self.landmarks_img, (N_landmarks, 1, 2))
-        landmarks_mirror = np.reshape(cv2.transform(landmarks_mirror, M), (N_landmarks, 2))
-        if len(landmarks_mirror) == 98:
-            for i in range(33):
-                self.landmarks_img[i] = landmarks_mirror[32-i]
-            
-            for i in range(5):
-                self.landmarks_img[33+i] = landmarks_mirror[46-i]
-                self.landmarks_img[46-i] = landmarks_mirror[33+i]
-
-            for i in range(4):
-                self.landmarks_img[38+i] = landmarks_mirror[50-i]
-                self.landmarks_img[50-i] = landmarks_mirror[38+i]
-
-            for i in range(4):
-                self.landmarks_img[51+i] = landmarks_mirror[51+i]
-            
-            for i in range(5):
-                self.landmarks_img[55+i] = landmarks_mirror[59-i]
-
-            for i in range(5):
-                self.landmarks_img[60+i] = landmarks_mirror[72-i]
-                self.landmarks_img[72-i] = landmarks_mirror[60+i]
-            
-            for i in range(3):
-                self.landmarks_img[65+i] = landmarks_mirror[75-i]
-                self.landmarks_img[75-i] = landmarks_mirror[65+i]
-
-            for i in range(7):
-                self.landmarks_img[76+i] = landmarks_mirror[82-i]
-
-            for i in range(5):
-                self.landmarks_img[83+i] = landmarks_mirror[87-i]
-
-            for i in range(5):
-                self.landmarks_img[88+i] = landmarks_mirror[92-i]
-
-            for i in range(3):
-                self.landmarks_img[93+i] = landmarks_mirror[95-i]
-
-            for i in range(2):
-                self.landmarks_img[96+i] = landmarks_mirror[97-i]
-        elif len(landmarks_mirror) == 68:
-            for i in range(17):
-                self.landmarks_img[i] = landmarks_mirror[16-i]
-            
-            for i in range(5):
-                self.landmarks_img[17+i] = landmarks_mirror[26-i]
-                self.landmarks_img[26-i] = landmarks_mirror[17+i]
-
-            for i in range(4):
-                self.landmarks_img[27+i] = landmarks_mirror[27+i]
-
-            for i in range(5):
-                self.landmarks_img[31+i] = landmarks_mirror[35-i]
-
-            for i in range(4):
-                self.landmarks_img[36+i] = landmarks_mirror[45-i]
-                self.landmarks_img[45-i] = landmarks_mirror[36+i]
-
-            for i in range(2):
-                self.landmarks_img[40+i] = landmarks_mirror[47-i]
-                self.landmarks_img[47-i] = landmarks_mirror[40+i]
-            
-            for i in range(7):
-                self.landmarks_img[48+1] = landmarks_mirror[54-i]
-
-            for i in range(5):
-                self.landmarks_img[55+1] = landmarks_mirror[59-i]
-
-            for i in range(5):
-                self.landmarks_img[60+1] = landmarks_mirror[64-i]
-
-            for i in range(3):
-                self.landmarks_img[65+1] = landmarks_mirror[67-i]
-        else:
-            raise ValueError('No mirror function for these landmarks defined.')
+        # self.landmarks_img = np.reshape(self.landmarks_img, (N_landmarks, 1, 2))
+        # self.landmarks_img = np.reshape(cv2.transform(self.landmarks_img, M), (N_landmarks, 2))
+        # self.landmarks_img = LandmarkDataUnit.MirrorLandmarks(self.landmarks_img)
+        if not(self.landmarks_bbox is None):
+            M = np.array([[-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]])
+            self.landmarks_bbox = np.reshape(self.landmarks_bbox, (N_landmarks, 1, 2))
+            self.landmarks_bbox = np.reshape(cv2.transform(self.landmarks_bbox, M), (N_landmarks, 2))
+            self.landmarks_bbox = LandmarkDataUnit.MirrorLandmarks(self.landmarks_bbox)
         return self
 
     def CalcInterocularDistance(self):
@@ -177,7 +182,7 @@ class LandmarkDataUnit(object):
             left_eye = self.landmarks_bbox[37]
             right_eye = self.landmarks_bbox[46]
         else:
-            raise ValueError('Eye location not defined for these landmarks.')
+            raise ValueError('No eye location defined for these landmarks.')
         return np.linalg.norm(right_eye-left_eye)+1e-3
 
     def TranslateBBox(self, translate):
@@ -212,9 +217,45 @@ class LandmarkDataUnit(object):
         if y2 < 0:
             y2 = 0
         self.bbox = BBox(np.array([x1, y1, x2, y2]).astype(int))
+        return self
 
-    def BBoxCroppedImg(self):
+    def CroppedImg(self):
         return self.img[self.bbox.y1:self.bbox.y2, self.bbox.x1:self.bbox.x2]
+
+    def CropImg(self):
+        self.img = self.img[self.bbox.y1:self.bbox.y2, self.bbox.x1:self.bbox.x2]
+
+    def Crop(self):
+        self.img = self.img[self.bbox.y1:self.bbox.y2, self.bbox.x1:self.bbox.x2]
+        x1 = 0
+        y1 = 0
+        x2 = self.bbox.x2 - self.bbox.x1
+        y2 = self.bbox.y2 - self.bbox.y1
+        self.bbox = BBox((x1, y1, x2, y2))
+        self.ProjectBBoxLandmarksToImg()
+        return self
+
+    def ResizeImg(self, size, inter=cv2.INTER_LINEAR):
+        self.img = cv2.resize(self.img, size, interpolation=inter)
+
+    def Resize(self, size, inter=cv2.INTER_LINEAR):
+        (h, w) = self.img.shape[:2]
+        M = np.array([[float(size[0])/float(w), 0.0, 0.0], [0.0, float(size[1])/float(h), 0.0]])
+        self.ResizeImg(size, inter)
+
+        N_landmarks = len(self.landmarks_img)
+        self.landmarks_img = np.reshape(self.landmarks_img, (N_landmarks, 1, 2))
+        self.landmarks_img = np.reshape(cv2.transform(self.landmarks_img, M), (N_landmarks, 2))
+        if not(self.bbox is None):
+            bbox = np.array([[[self.bbox.x1,self.bbox.y1]],[[self.bbox.x2,self.bbox.y2]]])
+            bbox = cv2.transform(bbox, M)
+            self.bbox = BBox((bbox[0][0][0], bbox[0][0][1], bbox[1][0][0], bbox[1][0][1]))
+        return self
+
+    def Scale(self, scale, inter=cv2.INTER_LINEAR):
+        (h, w) = self.img.shape[:2]
+        size = (int(float(w)*scale[0]), int(float(h)*scale[1]))
+        self.Resize(size, inter)
 
     # def DrawLandmarks(self, color: tuple):
     def DrawLandmarks(self, color):
@@ -225,4 +266,4 @@ class LandmarkDataUnit(object):
 
     # def DrawBBox(self, color: tuple):
     def DrawBBox(self, color):
-        self.img = BBox.DrawnBBoxMat(self.bbox, self.img, color)
+        self.img = BBox.DrawBBoxOnImg(self.bbox, self.img, color)

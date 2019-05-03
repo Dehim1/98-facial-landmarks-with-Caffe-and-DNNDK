@@ -54,8 +54,8 @@ The next entries are:
 
 <a id="figure-3">
     <figure class="image">
-        <a href="WFLW.png">
-            <img src="WFLW.png" alt="drawing" width="150">
+        <a href="wflw.png">
+            <img src="wflw.png" alt="drawing" width="150">
         </a>
     </figure>
 </a>

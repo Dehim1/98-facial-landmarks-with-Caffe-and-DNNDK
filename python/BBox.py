@@ -64,7 +64,6 @@ class BBox(object):
 
     @classmethod
     # def DrawOnMat(cls, bbox: BBox, img: cv2.Mat, color: tuple) -> cv2.Mat:
-    def DrawnBBoxMat(cls, bbox, img, color):
-        img_copy = copy.deepcopy(img)
-        cv2.rectangle(img_copy, (int(bbox.x1), int(bbox.y1)), (int(bbox.x2), int(bbox.y2)), color, 1)
-        return img_copy
+    def DrawBBoxOnImg(cls, bbox, img, color):
+        cv2.rectangle(img, (int(bbox.x1), int(bbox.y1)), (int(bbox.x2), int(bbox.y2)), color, 2)
+        return img

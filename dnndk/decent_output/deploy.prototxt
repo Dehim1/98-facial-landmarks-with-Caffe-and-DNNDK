@@ -1,0 +1,457 @@
+layer {
+  name: ""
+  type: "Input"
+  top: "data"
+  transform_param {
+  }
+  input_param {
+    shape {
+      dim: 1
+      dim: 3
+      dim: 80
+      dim: 80
+    }
+  }
+}
+layer {
+  type: "HDF5Data"
+  top: "data"
+  top: "lossmult_98"
+  phase: TRAIN
+  hdf5_data_param {
+    source: "/home/dehim/Downloads/datasets/landmark_h5/test_aug.txt"
+    batch_size: 1
+  }
+}
+layer {
+  name: "Conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "Conv1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  phase: TRAIN
+  convolution_param {
+    num_output: 16
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "ReLU1"
+  type: "ReLU"
+  bottom: "Conv1"
+  top: "Conv1"
+  phase: TRAIN
+}
+layer {
+  name: "Conv2"
+  type: "Convolution"
+  bottom: "Conv1"
+  top: "Conv2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  phase: TRAIN
+  convolution_param {
+    num_output: 32
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    dilation: 2
+  }
+}
+layer {
+  name: "ReLU2"
+  type: "ReLU"
+  bottom: "Conv2"
+  top: "Conv2"
+  phase: TRAIN
+}
+layer {
+  name: "Conv3"
+  type: "Convolution"
+  bottom: "Conv2"
+  top: "Conv3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  phase: TRAIN
+  convolution_param {
+    num_output: 32
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    dilation: 4
+  }
+}
+layer {
+  name: "ReLU3"
+  type: "ReLU"
+  bottom: "Conv3"
+  top: "Conv3"
+  phase: TRAIN
+}
+layer {
+  name: "Conv4"
+  type: "Convolution"
+  bottom: "Conv3"
+  top: "Conv4"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  phase: TRAIN
+  convolution_param {
+    num_output: 32
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    dilation: 8
+  }
+}
+layer {
+  name: "ReLU4"
+  type: "ReLU"
+  bottom: "Conv4"
+  top: "Conv4"
+  phase: TRAIN
+}
+layer {
+  name: "Conv5"
+  type: "Convolution"
+  bottom: "Conv4"
+  top: "Conv5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  phase: TRAIN
+  convolution_param {
+    num_output: 32
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    dilation: 16
+  }
+}
+layer {
+  name: "ReLU5"
+  type: "ReLU"
+  bottom: "Conv5"
+  top: "Conv5"
+  phase: TRAIN
+}
+layer {
+  name: "Conv6"
+  type: "Convolution"
+  bottom: "Conv5"
+  top: "Conv6"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  phase: TRAIN
+  convolution_param {
+    num_output: 48
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "ReLU6"
+  type: "ReLU"
+  bottom: "Conv6"
+  top: "Conv6"
+  phase: TRAIN
+}
+layer {
+  name: "Conv7"
+  type: "Convolution"
+  bottom: "Conv6"
+  top: "Conv7"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  phase: TRAIN
+  convolution_param {
+    num_output: 64
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    dilation: 2
+  }
+}
+layer {
+  name: "ReLU7"
+  type: "ReLU"
+  bottom: "Conv7"
+  top: "Conv7"
+  phase: TRAIN
+}
+layer {
+  name: "Conv8"
+  type: "Convolution"
+  bottom: "Conv7"
+  top: "Conv8"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  phase: TRAIN
+  convolution_param {
+    num_output: 96
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    dilation: 4
+  }
+}
+layer {
+  name: "ReLU8"
+  type: "ReLU"
+  bottom: "Conv8"
+  top: "Conv8"
+  phase: TRAIN
+}
+layer {
+  name: "Conv9"
+  type: "Convolution"
+  bottom: "Conv8"
+  top: "Conv9"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  phase: TRAIN
+  convolution_param {
+    num_output: 128
+    pad: 0
+    kernel_size: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "ReLU9"
+  type: "ReLU"
+  bottom: "Conv9"
+  top: "Conv9"
+  phase: TRAIN
+}
+layer {
+  name: "Conv10"
+  type: "Convolution"
+  bottom: "Conv9"
+  top: "Conv10"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  phase: TRAIN
+  convolution_param {
+    num_output: 192
+    pad: 0
+    kernel_size: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "ReLU10"
+  type: "ReLU"
+  bottom: "Conv10"
+  top: "Conv10"
+  phase: TRAIN
+}
+layer {
+  name: "Conv11"
+  type: "Convolution"
+  bottom: "Conv10"
+  top: "Conv11"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  phase: TRAIN
+  convolution_param {
+    num_output: 512
+    pad: 0
+    kernel_size: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.2
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "ReLU11"
+  type: "ReLU"
+  bottom: "Conv11"
+  top: "Conv11"
+  phase: TRAIN
+}
+layer {
+  name: "Dense_98"
+  type: "InnerProduct"
+  bottom: "Conv11"
+  top: "Dense_98"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  phase: TRAIN
+  inner_product_param {
+    num_output: 196
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}

@@ -1,0 +1,14 @@
+test_iter: 400
+test_interval: 200
+base_lr: 0.001
+display: 5
+max_iter: 100000000
+lr_policy: "fixed"
+momentum: 0.9
+snapshot: 500
+snapshot_prefix: "../caffe_data/snapshots/12_layer/snap"
+solver_mode: GPU
+net: "12_layer_train.prototxt"
+average_loss: 200
+momentum2: 0.999
+type: "Adam"
