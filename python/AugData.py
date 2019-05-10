@@ -12,8 +12,10 @@ import math
 import GetData
 
 def WriteHDF5(F_data, i, maxFileSize, h5_dir, h5_prefix, txt_file):
+    #13.
     for d in F_data:
         F_data[d] = sklearn.utils.shuffle(F_data[d], random_state=i)
+    #14.
     while(len(F_data['data']) != 0):
         h5_path = os.path.join(h5_dir, h5_prefix + '_' + str(i) + '.h5')
         print('Writing ' + h5_path)
@@ -45,7 +47,7 @@ class AugmentDataThread(threading.Thread):
         # Loop over every entry in data. Each entry contains a string containing the path to the image as well as a numpy array containing the landmarks.
         for d in range(len(self.data)):
             N_landmarks = len(self.data[d][0][1])
-            for (imgPath, landmarks) in self.data[d]:
+            for (imgPath, landmarks, attributes) in self.data[d]:
                 # Randomly initialize augmentation parameters in a range defined by augmentationRange.
                 # This assures every data entry will be augmented differently.
                 if self.augmentationRange[0]:
@@ -61,29 +63,37 @@ class AugmentDataThread(threading.Thread):
                 scale = (xScale, yScale)
 
                 # Load image into RAM and generate a LandmarkDataUnit object. This class defines functions required to process the dataset including data augmentation.
-                img = cv2.imread(imgPath)
-                LDU_aug = LandmarkDataUnit(img, landmarks)
+                img = cv2.imread(imgPath) #1.
+                LDU_aug = LandmarkDataUnit(img, landmarks) #1.
 
                 # Augment the current data entry and append the result to F_images and F_landmarks. 
                 # LDU_aug = copy.deepcopy(LDU)
-                LDU_aug.Rotate(angle)
-                LDU_aug.BBoxFromLandmarks()
-                LDU_aug.TranslateBBox(translate)
-                LDU_aug.ScaleBBox(scale)
-                LDU_aug.ClipBBox()
-                LDU_aug.ProjectImgLandmarksToBBox()
-                IOD = LDU_aug.CalcInterocularDistance()
-                LDU_aug.CropImg()
-                LDU_aug.ResizeImg(self.imgSize)
+                LDU_aug.Rotate(angle) #2.
+                LDU_aug.BBoxFromLandmarks() #3.
+                LDU_aug.TranslateBBox(translate) #4.
+                LDU_aug.ScaleBBox(scale) #5.
+                LDU_aug.ClipBBox() #6.
+                LDU_aug.ProjectImgLandmarksToBBox() #7.
+                LDU_aug.CropImg() #8.
+                LDU_aug.ResizeImg(self.imgSize) #9.
+                #10.
                 if mirror:
                     LDU_aug.Mirror()
-                img_aug = LDU_aug.img
+                IOD = LDU_aug.CalcInterocularDistance()
+                # LDU_aug.CalcLossMult() #11.
+                img_aug = LDU_aug.img 
                 img_aug = cv2.split(img_aug) #Split the different color channels of the image. This changes the shape from (imgSize[1], imgSize[0], 3) to (3, imgSize[1], imgSize[0]). This is required for Caffe.
                 img_aug = np.reshape(np.asarray(img_aug), (3, self.imgSize[1], self.imgSize[0]))
-                lm_aug = np.reshape(LDU_aug.landmarks_bbox, ((LDU_aug.landmarks_bbox.size)))
+                landmarks_aug = np.reshape(LDU_aug.landmarks_bbox, ((LDU_aug.landmarks_bbox.size)))
+                # lossmult_aug = np.reshape(LDU_aug.lossmult, ((LDU_aug.lossmult.size)))
+                #12.
                 self.F_data['data'][i] = img_aug
-                self.F_data['landmarks_' + str(N_landmarks)][i] = lm_aug
-                self.F_data['lossmult_' + str(N_landmarks)][i][0] = 1.0/IOD
+                self.F_data['lossweight'][i] = 1.0/IOD
+                self.F_data['landmarks_' + str(N_landmarks)][i] = landmarks_aug
+                # self.F_data['lossmult_' + str(N_landmarks)][i] = lossmult_aug
+                self.F_data['lossgate_' + str(N_landmarks)][i] = 1.0
+                if not(attributes is None):
+                    self.F_data['attributes_' + str(N_landmarks)][i] = attributes
                 i = i+1
                 # Print length of F_landmarks if it's divisible by 1000 to indicate progress.
                 if(i%100 == 0):
@@ -95,10 +105,8 @@ def GenerateDataset(data, N_threads_max, N_augmentations, augmentationRange, img
     open(txt_file, 'w').close()
     
     data_length = 0
-    N_landmarks = []
     for d in data:
         data_length += len(d)
-        N_landmarks.append(len(d[0][1]))
     
     N_iters = int(math.ceil(float(N_augmentations) / float(N_threads)))
     N_threads_0 = int(math.ceil(float(N_augmentations) / float(N_iters)))
@@ -114,9 +122,14 @@ def GenerateDataset(data, N_threads_max, N_augmentations, augmentationRange, img
     for N_threads_iter in iters:
         F_data = {}
         F_data['data'] = np.zeros((N_threads_iter*data_length, 3, imgSize[1], imgSize[0]), np.uint8)
-        for n in N_landmarks:
-            F_data['landmarks_' + str(n)] = np.zeros((N_threads_iter*data_length, 2*n), np.float32)
-            F_data['lossmult_' + str(n)] = np.zeros((N_threads_iter*data_length, 1), np.float32)
+        F_data['lossweight'] = np.zeros((N_threads_iter*data_length), np.float32)
+        for d in data:
+            N_landmarks = len(d[0][1])
+            F_data['landmarks_' + str(N_landmarks)] = np.zeros((N_threads_iter*data_length, 2*N_landmarks), np.float32)
+            F_data['lossgate_' + str(N_landmarks)] = np.zeros((N_threads_iter*data_length), np.uint8)
+            if not(d[0][2] is None):
+                N_attributes = len(d[0][2])
+                F_data['attributes_' + str(N_landmarks)] = np.zeros((N_threads_iter*data_length, N_attributes), np.uint8)
 
         threads = []
 
@@ -133,7 +146,7 @@ def GenerateDataset(data, N_threads_max, N_augmentations, augmentationRange, img
         for t in threads:
             t.join()
 
-        F_data, i = WriteHDF5(F_data, i, maxFileSize, h5_dir, h5_prefix, txt_file)
+        F_data, i = WriteHDF5(F_data, i, maxFileSize, h5_dir, h5_prefix, txt_file) #13. and 14.
 
 #Get dataset
 dataset_dir = '/home/dehim/Downloads/datasets/WFLW/WFLW_images'
@@ -146,7 +159,7 @@ maxFileSize = 7500
 
 N_threads = 4
 N_testAugmentations = 4
-N_trainAugmentations = 50
+N_trainAugmentations = 128
 
 mirror = True
 angleRange = (-55.0, 55.0)
@@ -159,9 +172,9 @@ augmentationRange = (mirror, angleRange, (xTranslateRange, yTranslateRange), (xS
 test_data = []
 train_data = []
 
-test_data.append(GetData.GetData_98(os.path.join(dataset_dir, 'list_98pt_rect_attr_test.txt')))
+# test_data.append(GetData.GetData_98(os.path.join(dataset_dir, 'list_98pt_rect_attr_test.txt')))
 train_data.append(GetData.GetData_98(os.path.join(dataset_dir, 'list_98pt_rect_attr_train.txt')))
 train_data.append(GetData.GetData_68('/home/dehim/Downloads/datasets/68_landmark'))
 
-GenerateDataset(test_data, N_threads, N_testAugmentations, augmentationRange, imgSize, maxFileSize, h5_dir, prefix_test)
+# GenerateDataset(test_data, N_threads, N_testAugmentations, augmentationRange, imgSize, maxFileSize, h5_dir, prefix_test)
 GenerateDataset(train_data, N_threads, N_trainAugmentations, augmentationRange, imgSize, maxFileSize, h5_dir, prefix_train)

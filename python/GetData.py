@@ -9,10 +9,11 @@ def GetData_98(filepath):
     for line in f.readlines():
         s = line.strip().split(' ')
         imgPath = os.path.join(dirname, s[206].replace('\\', '/'))
-        landmarks = np.zeros((98,2))
+        landmarks = np.zeros((98,2), np.float32)
         for i in range(0,98):
             landmarks[i] = (float(s[i*2]), float(s[i*2+1]))
-        data.append((imgPath, landmarks))
+        attributes = np.array(s[200:205], np.uint8)
+        data.append((imgPath, landmarks, attributes))
     return data
 
 def GetData_68(root):
@@ -55,5 +56,5 @@ def GetData_68(root):
                 line = lm_file.readline()
                 i += 1
 
-            data.append((img_path, landmarks))
+            data.append((img_path, landmarks, None))
     return data
