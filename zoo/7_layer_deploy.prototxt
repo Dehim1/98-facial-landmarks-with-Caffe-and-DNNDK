@@ -1,0 +1,281 @@
+name: "7_layer"
+input: "data"
+input_dim: 1
+input_dim: 3
+input_dim: 80
+input_dim: 80
+
+#######################################################
+#Layer 1
+#######################################################
+
+layer {
+    name: "Conv1"
+    type: "Convolution"
+    bottom: "data"
+    top: "Conv1"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    convolution_param {
+        num_output: 8
+        pad: 1
+        kernel_size: 3
+	    dilation: 1
+        stride: 1
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.2
+        }
+    }
+}
+
+layer {
+  name: "ReLU1"
+  bottom: "Conv1"
+  top: "Conv1"
+  type: "ReLU"
+}
+
+#######################################################
+#Layer 2
+#######################################################
+
+layer {
+    name: "Conv2"
+    type: "Convolution"
+    bottom: "Conv1"
+    top: "Conv2"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    convolution_param {
+        num_output: 16
+        pad: 2
+        kernel_size: 6
+	    dilation: 1
+        stride: 2
+        weight_filler {
+        type: "xavier"
+        std: 0.1
+    }
+    bias_filler {
+        type: "constant"
+        value: 0.2
+        }
+    }
+}
+
+layer {
+  name: "ReLU2"
+  bottom: "Conv2"
+  top: "Conv2"
+  type: "ReLU"
+}
+
+#######################################################
+#Layer 3
+#######################################################
+
+layer {
+    name: "Conv3"
+    type: "Convolution"
+    bottom: "Conv2"
+    top: "Conv3"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    convolution_param {
+        num_output: 24
+        pad: 2
+        kernel_size: 6
+	    dilation: 1
+        stride: 2
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.2
+        }
+    }
+}
+
+layer {
+  name: "ReLU3"
+  bottom: "Conv3"
+  top: "Conv3"
+  type: "ReLU"
+}
+
+#######################################################
+#Layer 4
+#######################################################
+
+layer {
+    name: "Conv4"
+    type: "Convolution"
+    bottom: "Conv3"
+    top: "Conv4"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    convolution_param {
+        num_output: 32
+        pad: 2
+        kernel_size: 6
+	    dilation: 1
+        stride: 2
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.2
+        }
+    }
+}
+
+layer {
+  name: "ReLU4"
+  bottom: "Conv4"
+  top: "Conv4"
+  type: "ReLU"
+}
+
+#######################################################
+# Layer 5
+#######################################################
+
+layer {
+    name: "Conv5"
+    type: "Convolution"
+    bottom: "Conv4"
+    top: "Conv5"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    convolution_param {
+        num_output: 40
+        pad: 2
+        kernel_size: 6
+	    dilation: 1
+        stride: 2
+        weight_filler {
+        type: "xavier"
+        std: 0.1
+    }
+    bias_filler {
+        type: "constant"
+        value: 0.2
+        }
+    }
+}
+
+layer {
+  name: "ReLU5"
+  bottom: "Conv5"
+  top: "Conv5"
+  type: "ReLU"
+}
+
+#######################################################
+#Layer 6
+#######################################################
+
+layer {
+    name: "Conv6"
+    type: "Convolution"
+    bottom: "Conv5"
+    top: "Conv6"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    convolution_param {
+        num_output: 512
+        pad: 0
+        kernel_size: 5
+	    dilation: 1
+        stride: 2
+        weight_filler {
+        type: "xavier"
+        std: 0.1
+    }
+    bias_filler {
+        type: "constant"
+        value: 0.2
+        }
+    }
+}
+
+layer {
+  name: "ReLU6"
+  bottom: "Conv6"
+  top: "Conv6"
+  type: "ReLU"
+}
+
+########################################
+#Fully Connected layer
+########################################
+
+layer {
+    name: "Dense_98"
+    type: "InnerProduct"
+    bottom: "Conv6"
+    top: "Dense_98"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 0
+    }
+    inner_product_param {
+        num_output: 196
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
