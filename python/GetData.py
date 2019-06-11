@@ -16,6 +16,18 @@ def GetData_98(filepath):
         data.append((imgPath, landmarks, attributes))
     return data
 
+def GetReferenceLandmarks_98():
+    python_path = os.path.dirname(os.path.realpath(__file__))
+    ref_lm_path = os.path.join(python_path, '../caffe_data/reference_landmarks.csv')
+    ref_landmarks = np.zeros((98, 2), np.float32)
+    f = open(ref_lm_path)
+    i=0
+    for line in f.readlines():
+        s = line.strip().split(',')
+        ref_landmarks[i]=(float(s[0]), float(s[1]))
+        i+=1
+    return ref_landmarks
+
 def GetData_68(root):
     N_landmarks = 68
     data = []

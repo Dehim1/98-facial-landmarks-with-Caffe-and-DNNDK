@@ -17,22 +17,20 @@ def ReadHDF5(i, h5_dir, h5_prefix):
 h5_dir = '/home/dehim/Downloads/datasets/landmark_h5'
 prefix_test = 'test_aug'
 prefix_train = 'train_aug'
-F_data = ReadHDF5(0, h5_dir, prefix_test)
+F_data = ReadHDF5(0, h5_dir, prefix_train)
 
-i = 13
+i = 2
 for d in F_data:
     print(d)
 img = F_data['data'][i]
 img = cv2.merge(img)
-if not(np.array_equal(F_data['lossmult_98'][i], np.zeros((196), np.float32))):
+if not(np.array_equal(F_data['lossgate_98'][i], np.zeros((), np.float32))):
     F_landmarks = F_data['landmarks_98'][i]
-    F_lossmult = F_data['lossmult_98'][i]
 else:
     F_landmarks = F_data['landmarks_68'][i]
-    F_lossmult = F_data['lossmult_68'][i]
 
 print(F_landmarks)
-print(F_lossmult)
+print(F_data['attributes_98'][i])
 
 lm = F_landmarks
 lm = np.reshape(lm, (len(F_landmarks)//2, 2))

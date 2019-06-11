@@ -8,7 +8,7 @@ python_path = os.path.dirname(os.path.realpath(__file__))
 root_path = os.path.join(python_path, '..')
 zoo_path = os.path.join(root_path, 'zoo')
 draw_path = os.path.join(root_path, 'net_drawings')
-net_prefix = '12_layer'
+net_prefix = '11_layer'
 
 train_net = os.path.join(zoo_path, net_prefix + '_train.prototxt')
 deploy_net = os.path.join(zoo_path, net_prefix + '_deploy.prototxt')

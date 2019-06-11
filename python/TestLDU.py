@@ -8,7 +8,7 @@ import numpy as np
 import cv2
 
 dataset_dir = '/home/dehim/Downloads/datasets/WFLW/WFLW_images'
-output_dir = '/home/dehim/Downloads/Neural_nets/98-facial-landmarks-with-DNNDK/LDU_test'
+output_dir = '/home/dehim/Downloads/Neural_nets/98-facial-landmarks-with-DNNDK/ldu_test'
 data = GetData.GetData_98(os.path.join(dataset_dir, 'list_98pt_rect_attr_train.txt'))
 i = 220
 LDU = LandmarkDataUnit(cv2.imread(data[i][0]), data[i][1])

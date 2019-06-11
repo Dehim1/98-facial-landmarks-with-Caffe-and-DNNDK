@@ -118,6 +118,9 @@ def GenerateDataset(data, N_threads_max, N_augmentations, augmentationRange, img
         iters[len(iters)-1-i] = iters[len(iters)-1-i] - 1
     print(iters)
     
+    ###
+    reference_landmarks = GetData_2.GetReferenceLandmarks_98()
+    ###
     i = 0
     for N_threads_iter in iters:
         F_data = {}
@@ -130,6 +133,10 @@ def GenerateDataset(data, N_threads_max, N_augmentations, augmentationRange, img
             if not(d[0][2] is None):
                 N_attributes = len(d[0][2])
                 F_data['attributes_' + str(N_landmarks)] = np.zeros((N_threads_iter*data_length, N_attributes), np.uint8)
+        ###
+        F_data['reference_landmarks_98'] = np.empty((N_threads_iter*data_length, 196), np.float32)
+        F_data['reference_landmarks_98'][:] = np.reshape(reference_landmarks, (196))
+        ###
 
         threads = []
 
@@ -157,9 +164,9 @@ prefix_train = 'train_aug'
 imgSize = (80, 80)
 maxFileSize = 7500
 
-N_threads = 4
-N_testAugmentations = 4
-N_trainAugmentations = 128
+N_threads = 3
+N_testAugmentations = 9
+N_trainAugmentations = 129
 
 mirror = True
 angleRange = (-55.0, 55.0)
@@ -172,9 +179,9 @@ augmentationRange = (mirror, angleRange, (xTranslateRange, yTranslateRange), (xS
 test_data = []
 train_data = []
 
-# test_data.append(GetData.GetData_98(os.path.join(dataset_dir, 'list_98pt_rect_attr_test.txt')))
-train_data.append(GetData.GetData_98(os.path.join(dataset_dir, 'list_98pt_rect_attr_train.txt')))
-train_data.append(GetData.GetData_68('/home/dehim/Downloads/datasets/68_landmark'))
+test_data.append(GetData_2.GetData_98(os.path.join(dataset_dir, 'list_98pt_rect_attr_test.txt')))
+train_data.append(GetData_2.GetData_98(os.path.join(dataset_dir, 'list_98pt_rect_attr_train.txt')))
+train_data.append(GetData_2.GetData_68('/home/dehim/Downloads/datasets/68_landmark'))
 
-# GenerateDataset(test_data, N_threads, N_testAugmentations, augmentationRange, imgSize, maxFileSize, h5_dir, prefix_test)
+GenerateDataset(test_data, N_threads, N_testAugmentations, augmentationRange, imgSize, maxFileSize, h5_dir, prefix_test)
 GenerateDataset(train_data, N_threads, N_trainAugmentations, augmentationRange, imgSize, maxFileSize, h5_dir, prefix_train)

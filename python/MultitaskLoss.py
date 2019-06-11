@@ -14,6 +14,10 @@ class MultitaskLoss(caffe.Layer):
         self.losses = np.zeros((len(bottom)), np.float32)
         self.blobs_diff = np.zeros((len(bottom)), np.float32)
 
+        self.blobs.add_blob(1)
+        self.blobs[1].reshape(len(bottom))
+        self.blobs[1].data.fill(0.0)
+
     def reshape(self, bottom, top):
         # check input dimensions match
         for idx in range(len(bottom)):
@@ -30,11 +34,17 @@ class MultitaskLoss(caffe.Layer):
         self.blobs_diff = self.losses_exp - 1.0
         top[0].data[...] = np.sum(self.losses)
 
+        self.UpdateNorm()
+        print(self.blobs[1].data[...])
         print(np.exp(-self.blobs[0].data))
 
     def backward(self, top, propagate_down, bottom):
         for idx in range(len(bottom)):
             if not propagate_down[idx]:
                 continue
-            bottom[idx].diff[...] = self.bottoms_diff[idx]
-            self.blobs[0].diff[idx] = self.blobs_diff[idx]
+            bottom[idx].diff[...] = self.bottoms_diff[idx]*np.mean(self.blobs[1].data[...])
+            self.blobs[0].diff[idx] = self.blobs_diff[idx]*np.mean(self.blobs[1].data[...])
+
+    def UpdateNorm(self):
+        beta_mu = 0.99
+        self.blobs[1].data[...] = beta_mu * self.blobs[1].data[...] + (1.0-beta_mu)*self.bottoms

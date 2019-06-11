@@ -4,47 +4,28 @@ import numpy as np
 class MultitaskLoss_2(caffe.Layer):
     #ORIGINAL EXAMPLE
     def setup(self, bottom, top):
-        self.blobs.add_blob(1)
-        self.blobs[0].reshape(len(bottom))
-        self.blobs[0].data.fill(0.0)
-
         self.bottoms = np.zeros((len(bottom)), np.float32)
         self.bottoms_diff = np.zeros((len(bottom)), np.float32)
-        self.losses_exp = np.zeros((len(bottom)), np.float32)
-        self.losses = np.zeros((len(bottom)), np.float32)
-        self.blobs_diff = np.zeros((len(bottom)), np.float32)
-
-        self.blobs.add_blob(1)
-        self.blobs[1].reshape(len(bottom))
-        self.blobs[1].data.fill(0.0)
+        top[0].reshape(len(bottom))
+        # top[0].data.fill(1.0)
 
     def reshape(self, bottom, top):
         # check input dimensions match
         for idx in range(len(bottom)):
             if bottom[idx].data.shape != ():
                 raise Exception('Bottom blob ' + str(idx) + ' must have shape (). shape is ' + str(bottom[idx].data.shape))
-        top[0].reshape(1)
+        # top[0].reshape(len(bottom))
 
     def forward(self, bottom, top):
         for idx in range(len(bottom)):
             self.bottoms[idx] = bottom[idx].data
-        self.bottoms_diff = np.exp(self.blobs[0].data)
-        self.losses_exp = self.bottoms_diff*self.bottoms
-        self.losses = self.losses_exp - self.blobs[0].data
-        self.blobs_diff = self.losses_exp - 1.0
-        top[0].data[...] = np.sum(self.losses)
 
-        self.UpdateNorm()
-        print(self.blobs[1].data[...])
-        print(np.exp(-self.blobs[0].data))
+        beta_mu = 0.9995
+        top[0].data[...] =  beta_mu * top[0].data[...] + (1.0-beta_mu)*self.bottoms
+        self.bottoms_diff = np.mean(top[0].data[...])/(top[0].data[...]+0.000001)
 
     def backward(self, top, propagate_down, bottom):
         for idx in range(len(bottom)):
             if not propagate_down[idx]:
                 continue
-            bottom[idx].diff[...] = self.bottoms_diff[idx]*np.mean(self.blobs[1].data[...])
-            self.blobs[0].diff[idx] = self.blobs_diff[idx]*np.mean(self.blobs[1].data[...])
-
-    def UpdateNorm(self):
-        beta_mu = 0.99
-        self.blobs[1].data[...] = beta_mu * self.blobs[1].data[...] + (1.0-beta_mu)*self.bottoms
+            bottom[idx].diff[...] = self.bottoms_diff[idx]

@@ -22,8 +22,8 @@ def GetImgPaths(parent):
 python_path = os.path.dirname(os.path.realpath(__file__))
 root_path = os.path.join(python_path, '..')
 zoo_path = os.path.join(root_path, 'zoo')
-network_path = os.path.join(zoo_path, '12_layer_deploy.prototxt')
-weight_path = os.path.join(zoo_path, '12_layer_weights.caffemodel')
+network_path = os.path.join(zoo_path, '15_layer_deploy.prototxt')
+weight_path = os.path.join(zoo_path, 'snap_iter_3400000.caffemodel')
 images_path = os.path.join(root_path, 'images')
 results_path = os.path.join(root_path, 'results')
 
