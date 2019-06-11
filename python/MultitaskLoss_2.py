@@ -22,7 +22,7 @@ class MultitaskLoss_2(caffe.Layer):
 
         beta_mu = 0.9995
         top[0].data[...] =  beta_mu * top[0].data[...] + (1.0-beta_mu)*self.bottoms
-        self.bottoms_diff = np.mean(top[0].data[...])/(top[0].data[...]+0.000001)
+        self.bottoms_diff = np.mean(top[0].data[...])/(len(bottom)*top[0].data[...]+0.000001)
 
     def backward(self, top, propagate_down, bottom):
         for idx in range(len(bottom)):

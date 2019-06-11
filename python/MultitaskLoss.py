@@ -42,8 +42,8 @@ class MultitaskLoss(caffe.Layer):
         for idx in range(len(bottom)):
             if not propagate_down[idx]:
                 continue
-            bottom[idx].diff[...] = self.bottoms_diff[idx]*np.mean(self.blobs[1].data[...])
-            self.blobs[0].diff[idx] = self.blobs_diff[idx]*np.mean(self.blobs[1].data[...])
+            bottom[idx].diff[...] = self.bottoms_diff[idx]*np.mean(self.blobs[1].data[...])/len(bottom)
+            self.blobs[0].diff[idx] = self.blobs_diff[idx]*np.mean(self.blobs[1].data[...])/len(bottom)
 
     def UpdateNorm(self):
         beta_mu = 0.99

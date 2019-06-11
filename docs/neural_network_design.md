@@ -17,15 +17,49 @@ VanillaCNN detects 5 facial landmarks (left pupil, right pupil, nose, left mouth
 
 The 98 landmark network is designed to be run on the DEEPHi DPU. Because the DPU as of yet does not support the tanh function, the tanh and absolute value units in the VanillaCNN network were replaced by the ReLU activation function. ReLU is also less computationally expensive and can be faster to train due to the gradient being non-zero for a larger part of the activation function. The network was retrained to confirm its function. This reduced the testing loss of the neural network from 0.022 to 0.019. To try to improve the spatial resolution of the neural network, the network was redesigned with dilated convolutions instead of pooling layers. This further improved the testing loss of the network from 0.019 to 0.011.
 
-This 5 landmark design was scaled up to a 98 landmark design. The input was changed to a size of 80 by 80. Since the 98 landmark network must predict 98 x and 98 y coordinates, the 10 output fully connected layer was replaced by a 196 output fully connected layer. To try to improve the performance of the model after quantization, the model was trained with added noise. This noise is generated as a uniform distribution with a mean of 1.0 and a maximum absolute deviation of 0.050. The noise is then multiplied by the outputs of the ReLU layers. The deviation of this noise can be increased to increase regularization, or decreased to allow the network to converge to a lower training loss.
+This 5 landmark design was scaled up to a 98 landmark design. The input was changed to a size of 80 by 80. Since the 98 landmark network must predict 98 x and 98 y coordinates, the 10 output fully connected layer was replaced by a 196 output fully connected layer. To try to improve the performance of the model after quantization, the model was trained with added noise. This noise is generated as a uniform distribution with a mean of 1.0 and a maximum absolute deviation of 0.010. The noise is then multiplied by the outputs of the ReLU layers. The deviation of this noise can be increased to increase regularization, or decreased to allow the network to converge to a lower training loss.
 
 To get more data, the 68 landmark datasets from ibug are also used during training. Because these landmarks are not a subset of the WFLW dataset, an extra top layer is added to the model. This top layer is only used during training. The other layers of the network are shared with the 98 landmark top layer. This increases the training set size from 7500 to 11936. Similarly more datasets can be addded to further increase the dataset size.
 
-To further reduce testing loss, the neural network is also trained to predict the attribute flags provided by the WFLW dataset. This is done by adding another fully connected layer with a sigmoid activation function for each of the attribute flags. The neural network can use the knowledge it learns from these attribute flags to get better at predicting landmark locations.
+To further reduce testing loss, the neural network is also trained to predict the attribute flags provided by the WFLW dataset. This is done by adding another fully connected layer with a sigmoid activation function for each of the attribute flags. The neural network can use the knowledge it learns from these attribute flags to get better at predicting landmark locations. This is called multitask learning.
 
-Because this neural network will be used as a preprocessing step for face recognition, another fully connected layer is added. This fully connected layer will be trained to predict a transformation matrix which transforms the image such that the mean squared error between the original landmarks and a list of reference landmarks is as small as possible. This should align each image such that each face has approximately the same size, position and orientation when it is fed to the face recognition network. For this the python layer [Transform2DPoints](../python/Transform2DPoints.py) was created.
+All of the top layers use a Euclidean loss layer. The outputs of these loss layers are fed to a custom layer, which averages each loss over multiple iterations using an exponentially weighted average. The derivative of each of the loss layers is set to the average of all of the exponentially weighted averages, divided by each of the individual exponentially weighted averages. This should cause each loss layer to converge at approximately the same rate. 
 
-All of the top layers use a Euclidean loss layer. The outputs of these loss layers are fed to a custom layer, which averages each loss over multiple iterations using an exponentially weighted average. The derivative of each of the loss layers is set to the average of all of the exponentially weighted averages, divided by each of the individual exponentially weighted averages. This should cause each loss layer to converge at approximately the same rate. The idea behind this layer was obtained from https://arxiv.org/abs/1705.07115. To implement this the python layer [MultitaskLoss](../python/MultitaskLoss.py) was created.
+The idea behind this layer was obtained from https://arxiv.org/abs/1705.07115. This paper proposes a layer which adapts the learning rates of the top layers in a multitask neural network to let the neural network converge more optimally on each of the tasks it is trained for. To do this the following adjusted loss function is used:
+
+<a id="figure-1">
+    <figure class="image">
+        <a href="multitaskloss_orig.png">
+            <img src="multitaskloss_orig.png" alt="drawing">
+        </a>
+    </figure>
+</a>
+
+This new loss function has extra learnable parameters sigma, which like the weights of the neural network are optimized to minimize this loss function. 
+
+From this loss function we derive:
+
+<a id="figure-3">
+    <figure class="image">
+        <a href="multitaskloss_deriv.png">
+            <img src="multitaskloss_deriv.png" alt="drawing">
+        </a>
+    </figure>
+</a>
+
+This shows that the derivative of the weight of each loss function is zero as long as the weight is equal to 1/L. This stationary point is a minimum and therefore stable if the corresponding loss function is greater than zero. Because this weight is only updated slightly on every update, this has the effect of dividing each loss by its average. Instead of learning this average, the layer used in this neural network just directly calculates the average using an exponentially weighted average.
+
+However, when dividing the current loss by its average, the resultant adjusted loss will remain approximately one and will not decrease as training progresses. To counteract this, each lossweight is multiplied by the average of all of the exponentially weighted averages. All in all this results in the following:
+
+<a id="figure-3">
+    <figure class="image">
+        <a href="multitaskloss_new.png">
+            <img src="multitaskloss_new.png" alt="drawing">
+        </a>
+    </figure>
+</a>
+
+This is implemented in the python layer [MultitaskLoss_2](../python/MultitaskLoss_2.py). The python layer [MultitaskLoss](../python/MultitaskLoss.py) is similar to [MultitaskLoss_2](../python/MultitaskLoss_2.py), but uses learned parameters like in the original paper instead of an exponentially weighted average.
 
 &nbsp;
 
