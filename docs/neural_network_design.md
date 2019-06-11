@@ -29,8 +29,8 @@ The idea behind this layer was obtained from https://arxiv.org/abs/1705.07115. T
 
 <a id="figure-1">
     <figure class="image">
-        <a href="multitaskloss_orig.png">
-            <img src="multitaskloss_orig.png" alt="drawing">
+        <a href="./images/multitaskloss_orig.png">
+            <img src="./images/multitaskloss_orig.png" alt="drawing">
         </a>
     </figure>
 </a>
@@ -41,8 +41,8 @@ From this loss function we derive:
 
 <a id="figure-3">
     <figure class="image">
-        <a href="multitaskloss_deriv.png">
-            <img src="multitaskloss_deriv.png" alt="drawing">
+        <a href="./images/multitaskloss_deriv.png">
+            <img src="./images/multitaskloss_deriv.png" alt="drawing">
         </a>
     </figure>
 </a>
@@ -53,8 +53,8 @@ However, when dividing the current loss by its average, the resultant adjusted l
 
 <a id="figure-3">
     <figure class="image">
-        <a href="multitaskloss_new.png">
-            <img src="multitaskloss_new.png" alt="drawing">
+        <a href="./images/multitaskloss_new.png">
+            <img src="./images/multitaskloss_new.png" alt="drawing">
         </a>
     </figure>
 </a>

@@ -50,8 +50,8 @@ The next entries are:
 
 <a id="figure-3">
     <figure class="image">
-        <a href="wflw.png">
-            <img src="wflw.png" alt="drawing" width="150">
+        <a href="./images/wflw.png">
+            <img src="./images/wflw.png" alt="drawing" width="150">
         </a>
     </figure>
 </a>

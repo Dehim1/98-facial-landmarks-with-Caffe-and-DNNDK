@@ -16,8 +16,8 @@ Each image and its landmarks will first be randomly mirrored, rotated, translate
 Data augmentation procedes as follows:
 <a id="figure-1">
     <figure class="image">
-        <a href="data_augmentation.png">
-            <img src="data_augmentation.png" alt="drawing" width="150">
+        <a href="./images/data_augmentation.png">
+            <img src="./images/data_augmentation.png" alt="drawing" width="150">
         </a>
     </figure>
 </a>
