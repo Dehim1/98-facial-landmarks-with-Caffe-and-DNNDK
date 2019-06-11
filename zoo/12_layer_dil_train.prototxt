@@ -1,0 +1,1231 @@
+name: "12_layer_dil"
+
+layer {
+   type: "HDF5Data"
+   top: "data" # same name as given in create_dataset!
+   top: "lossweight"
+   top: "lossgate_68"
+   top: "landmarks_68"
+   top: "lossgate_98"
+   top: "landmarks_98"
+   top: "attributes_98"
+   hdf5_data_param {
+     source: "/home/dehim/Downloads/datasets/landmark_h5/train_aug.txt" # do not give the h5 files directly, but the list.
+     batch_size: 8
+   }
+   include { phase: TRAIN }
+ }
+
+layer {
+   type: "HDF5Data"
+   top: "data" # same name as given in create_dataset!
+   top: "lossweight"
+   top: "lossgate_98"
+   top: "landmarks_98"
+   hdf5_data_param {
+     source: "/home/dehim/Downloads/datasets/landmark_h5/test_aug.txt" # do not give the h5 files directly, but the list.
+     batch_size: 10
+   }
+   include { phase: TEST }
+}
+
+#######################################################
+#Layer 1
+#######################################################
+
+layer {
+    name: "Conv1"
+    type: "Convolution"
+    bottom: "data"
+    top: "Conv1"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    convolution_param {
+        num_output: 16
+        pad: 0
+        kernel_size: 3
+	    dilation: 1
+        stride: 1
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+  name: "ReLU1"
+  bottom: "Conv1"
+  top: "Conv1"
+  type: "ReLU"
+}
+
+layer {
+    name: "noiseGen1"
+    include { phase: TRAIN }
+    type: "DummyData"
+    top: "noiseGen1"
+    dummy_data_param {
+        num: 8
+        channels: 16
+        height: 78
+        width: 78
+        data_filler{
+            type: "uniform"
+            min: 0.990
+            max: 1.010
+        }
+    }
+}
+
+layer {
+    name: "noiseMult1"
+    include { phase: TRAIN }
+    type: "Eltwise"
+    bottom: "noiseGen1"
+    bottom: "Conv1"
+    top: "noiseMult1"
+    eltwise_param{
+        operation: PROD
+    }
+}
+
+#######################################################
+#Layer 2
+#######################################################
+
+layer {
+    include { phase: TRAIN }
+    name: "Conv2"
+    type: "Convolution"
+    bottom: "noiseMult1"
+    top: "Conv2"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    convolution_param {
+        num_output: 32
+        pad: 0
+        kernel_size: 3
+	    dilation: 2
+        stride: 1
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+    include { phase: TEST }
+    name: "Conv2"
+    type: "Convolution"
+    bottom: "Conv1"
+    top: "Conv2"
+    convolution_param {
+        num_output: 32
+        pad: 0
+        kernel_size: 3
+	    dilation: 2
+        stride: 1
+    }
+}
+
+layer {
+  name: "ReLU2"
+  bottom: "Conv2"
+  top: "Conv2"
+  type: "ReLU"
+}
+
+layer {
+    name: "noiseGen2"
+    include { phase: TRAIN }
+    type: "DummyData"
+    top: "noiseGen2"
+    dummy_data_param {
+        num: 8
+        channels: 32
+        height: 74
+        width: 74
+        data_filler{
+            type: "uniform"
+            min: 0.990
+            max: 1.010
+        }
+    }
+}
+
+layer {
+    name: "noiseMult2"
+    include { phase: TRAIN }
+    type: "Eltwise"
+    bottom: "noiseGen2"
+    bottom: "Conv2"
+    top: "noiseMult2"
+    eltwise_param{
+        operation: PROD
+    }
+}
+
+#######################################################
+#Layer 3
+#######################################################
+
+layer {
+    include { phase: TRAIN }
+    name: "Conv3"
+    type: "Convolution"
+    bottom: "noiseMult2"
+    top: "Conv3"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    convolution_param {
+        num_output: 32
+        pad: 0
+        kernel_size: 3
+	    dilation: 4
+        stride: 1
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+    include { phase: TEST }
+    name: "Conv3"
+    type: "Convolution"
+    bottom: "Conv2"
+    top: "Conv3"
+    convolution_param {
+        num_output: 32
+        pad: 0
+        kernel_size: 3
+	    dilation: 4
+        stride: 1
+    }
+}
+
+layer {
+  name: "ReLU3"
+  bottom: "Conv3"
+  top: "Conv3"
+  type: "ReLU"
+}
+
+layer {
+    name: "noiseGen3"
+    include { phase: TRAIN }
+    type: "DummyData"
+    top: "noiseGen3"
+    dummy_data_param {
+        num: 8
+        channels: 32
+        height: 66
+        width: 66
+        data_filler{
+            type: "uniform"
+            min: 0.990
+            max: 1.010
+        }
+    }
+}
+
+layer {
+    name: "noiseMult3"
+    include { phase: TRAIN }
+    type: "Eltwise"
+    bottom: "noiseGen3"
+    bottom: "Conv3"
+    top: "noiseMult3"
+    eltwise_param{
+        operation: PROD
+    }
+}
+
+#######################################################
+#Layer 4
+#######################################################
+
+layer {
+    include { phase: TRAIN }
+    name: "Conv4"
+    type: "Convolution"
+    bottom: "noiseMult3"
+    top: "Conv4"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    convolution_param {
+        num_output: 32
+        pad: 0
+        kernel_size: 3
+	    dilation: 8
+        stride: 1
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+    include { phase: TEST }
+    name: "Conv4"
+    type: "Convolution"
+    bottom: "Conv3"
+    top: "Conv4"
+    convolution_param {
+        num_output: 32
+        pad: 0
+        kernel_size: 3
+	    dilation: 8
+        stride: 1
+    }
+}
+
+layer {
+  name: "ReLU4"
+  bottom: "Conv4"
+  top: "Conv4"
+  type: "ReLU"
+}
+
+layer {
+    name: "noiseGen4"
+    include { phase: TRAIN }
+    type: "DummyData"
+    top: "noiseGen4"
+    dummy_data_param {
+        num: 8
+        channels: 32
+        height: 50
+        width: 50
+        data_filler{
+            type: "uniform"
+            min: 0.990
+            max: 1.010
+        }
+    }
+}
+
+layer {
+    name: "noiseMult4"
+    include { phase: TRAIN }
+    type: "Eltwise"
+    bottom: "noiseGen4"
+    bottom: "Conv4"
+    top: "noiseMult4"
+    eltwise_param{
+        operation: PROD
+    }
+}
+
+#######################################################
+# Layer 5
+#######################################################
+
+layer {
+    include { phase: TRAIN }
+    name: "Conv5"
+    type: "Convolution"
+    bottom: "noiseMult4"
+    top: "Conv5"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    convolution_param {
+        num_output: 32
+        pad: 0
+        kernel_size: 3
+	    dilation: 16
+        stride: 1
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+    include { phase: TEST }
+    name: "Conv5"
+    type: "Convolution"
+    bottom: "Conv4"
+    top: "Conv5"
+    convolution_param {
+        num_output: 32
+        pad: 0
+        kernel_size: 3
+	    dilation: 16
+        stride: 1
+    }
+}
+
+layer {
+  name: "ReLU5"
+  bottom: "Conv5"
+  top: "Conv5"
+  type: "ReLU"
+}
+
+layer {
+    name: "noiseGen5"
+    include { phase: TRAIN }
+    type: "DummyData"
+    top: "noiseGen5"
+    dummy_data_param {
+        num: 8
+        channels: 32
+        height: 18
+        width: 18
+        data_filler{
+            type: "uniform"
+            min: 0.990
+            max: 1.010
+        }
+    }
+}
+
+layer {
+    name: "noiseMult5"
+    include { phase: TRAIN }
+    type: "Eltwise"
+    bottom: "noiseGen5"
+    bottom: "Conv5"
+    top: "noiseMult5"
+    eltwise_param{
+        operation: PROD
+    }
+}
+
+#######################################################
+#Layer 6
+#######################################################
+
+layer {
+    include { phase: TRAIN }
+    name: "Conv6"
+    type: "Convolution"
+    bottom: "noiseMult5"
+    top: "Conv6"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    convolution_param {
+        num_output: 48
+        pad: 0
+        kernel_size: 3
+	    dilation: 1
+        stride: 1
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+    include { phase: TEST }
+    name: "Conv6"
+    type: "Convolution"
+    bottom: "Conv5"
+    top: "Conv6"
+    convolution_param {
+        num_output: 48
+        pad: 0
+        kernel_size: 3
+	    dilation: 1
+        stride: 1
+    }
+}
+
+layer {
+  name: "ReLU6"
+  bottom: "Conv6"
+  top: "Conv6"
+  type: "ReLU"
+}
+
+layer {
+    name: "noiseGen6"
+    include { phase: TRAIN }
+    type: "DummyData"
+    top: "noiseGen6"
+    dummy_data_param {
+        num: 8
+        channels: 48
+        height: 16
+        width: 16
+        data_filler{
+            type: "uniform"
+            min: 0.990
+            max: 1.010
+        }
+    }
+}
+
+layer {
+    name: "noiseMult6"
+    include { phase: TRAIN }
+    type: "Eltwise"
+    bottom: "noiseGen6"
+    bottom: "Conv6"
+    top: "noiseMult6"
+    eltwise_param{
+        operation: PROD
+    }
+}
+
+#######################################################
+#Layer 7
+#######################################################
+
+layer {
+    include { phase: TRAIN }
+    name: "Conv7"
+    type: "Convolution"
+    bottom: "noiseMult6"
+    top: "Conv7"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    convolution_param {
+        num_output: 64
+        pad: 0
+        kernel_size: 3
+	    dilation: 2
+        stride: 1
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+    include { phase: TEST }
+    name: "Conv7"
+    type: "Convolution"
+    bottom: "Conv6"
+    top: "Conv7"
+    convolution_param {
+        num_output: 64
+        pad: 0
+        kernel_size: 3
+	    dilation: 2
+        stride: 1
+    }
+}
+
+layer {
+  name: "ReLU7"
+  bottom: "Conv7"
+  top: "Conv7"
+  type: "ReLU"
+}
+
+layer {
+    name: "noiseGen7"
+    include { phase: TRAIN }
+    type: "DummyData"
+    top: "noiseGen7"
+    dummy_data_param {
+        num: 8
+        channels: 64
+        height: 12
+        width: 12
+        data_filler{
+            type: "uniform"
+            min: 0.990
+            max: 1.010
+        }
+    }
+}
+
+layer {
+    name: "noiseMult7"
+    include { phase: TRAIN }
+    type: "Eltwise"
+    bottom: "noiseGen7"
+    bottom: "Conv7"
+    top: "noiseMult7"
+    eltwise_param{
+        operation: PROD
+    }
+}
+
+#######################################################
+#Layer 8
+#######################################################
+
+layer {
+    include { phase: TRAIN }
+    name: "Conv8"
+    type: "Convolution"
+    bottom: "noiseMult7"
+    top: "Conv8"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    convolution_param {
+        num_output: 96
+        pad: 0
+        kernel_size: 3
+	    dilation: 4
+        stride: 1
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+    include { phase: TEST }
+    name: "Conv8"
+    type: "Convolution"
+    bottom: "Conv7"
+    top: "Conv8"
+    convolution_param {
+        num_output: 96
+        pad: 0
+        kernel_size: 3
+	    dilation: 4
+        stride: 1
+    }
+}
+
+layer {
+  name: "ReLU8"
+  bottom: "Conv8"
+  top: "Conv8"
+  type: "ReLU"
+}
+
+layer {
+    name: "noiseGen8"
+    include { phase: TRAIN }
+    type: "DummyData"
+    top: "noiseGen8"
+    dummy_data_param {
+        num: 8
+        channels: 96
+        height: 4
+        width: 4
+        data_filler{
+            type: "uniform"
+            min: 0.990
+            max: 1.010
+        }
+    }
+}
+
+layer {
+    name: "noiseMult8"
+    include { phase: TRAIN }
+    type: "Eltwise"
+    bottom: "noiseGen8"
+    bottom: "Conv8"
+    top: "noiseMult8"
+    eltwise_param{
+        operation: PROD
+    }
+}
+
+#######################################################
+#Layer 9
+#######################################################
+
+layer {
+    include { phase: TRAIN }
+    name: "Conv9"
+    type: "Convolution"
+    bottom: "noiseMult8"
+    top: "Conv9"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    convolution_param {
+        num_output: 128
+        pad: 0
+        kernel_size: 2
+	    dilation: 1
+        stride: 1
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+    include { phase: TEST }
+    name: "Conv9"
+    type: "Convolution"
+    bottom: "Conv8"
+    top: "Conv9"
+    convolution_param {
+        num_output: 128
+        pad: 0
+        kernel_size: 2
+	    dilation: 1
+        stride: 1
+    }
+}
+
+layer {
+  name: "ReLU9"
+  bottom: "Conv9"
+  top: "Conv9"
+  type: "ReLU"
+}
+
+layer {
+    name: "noiseGen9"
+    include { phase: TRAIN }
+    type: "DummyData"
+    top: "noiseGen9"
+    dummy_data_param {
+        num: 8
+        channels: 128
+        height: 3
+        width: 3
+        data_filler{
+            type: "uniform"
+            min: 0.990
+            max: 1.010
+        }
+    }
+}
+
+layer {
+    name: "noiseMult9"
+    include { phase: TRAIN }
+    type: "Eltwise"
+    bottom: "noiseGen9"
+    bottom: "Conv9"
+    top: "noiseMult9"
+    eltwise_param{
+        operation: PROD
+    }
+}
+
+#######################################################
+#Layer 10
+#######################################################
+
+layer {
+    include { phase: TRAIN }
+    name: "Conv10"
+    type: "Convolution"
+    bottom: "noiseMult9"
+    top: "Conv10"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    convolution_param {
+        num_output: 192
+        pad: 0
+        kernel_size: 2
+	    dilation: 1
+        stride: 1
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+    include { phase: TEST }
+    name: "Conv10"
+    type: "Convolution"
+    bottom: "Conv9"
+    top: "Conv10"
+    convolution_param {
+        num_output: 192
+        pad: 0
+        kernel_size: 2
+	    dilation: 1
+        stride: 1
+    }
+}
+
+layer {
+  name: "ReLU10"
+  bottom: "Conv10"
+  top: "Conv10"
+  type: "ReLU"
+}
+
+layer {
+    name: "noiseGen10"
+    include { phase: TRAIN }
+    type: "DummyData"
+    top: "noiseGen10"
+    dummy_data_param {
+        num: 8
+        channels: 192
+        height: 2
+        width: 2
+        data_filler{
+            type: "uniform"
+            min: 0.990
+            max: 1.010
+        }
+    }
+}
+
+layer {
+    name: "noiseMult10"
+    include { phase: TRAIN }
+    type: "Eltwise"
+    bottom: "noiseGen10"
+    bottom: "Conv10"
+    top: "noiseMult10"
+    eltwise_param{
+        operation: PROD
+    }
+}
+
+#######################################################
+#Layer 11
+#######################################################
+
+layer {
+    include { phase: TRAIN }
+    name: "Conv11"
+    type: "Convolution"
+    bottom: "noiseMult10"
+    top: "Conv11"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    convolution_param {
+        num_output: 512
+        pad: 0
+        kernel_size: 2
+	    dilation: 1
+        stride: 1
+        weight_filler {
+            type: "xavier"
+            std: 0.1
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+    include { phase: TEST }
+    name: "Conv11"
+    type: "Convolution"
+    bottom: "Conv10"
+    top: "Conv11"
+    convolution_param {
+        num_output: 512
+        pad: 0
+        kernel_size: 2
+	    dilation: 1
+        stride: 1
+    }
+}
+
+layer {
+  name: "ReLU11"
+  bottom: "Conv11"
+  top: "Conv11"
+  type: "ReLU"
+}
+
+layer {
+    name: "noiseGen11"
+    include { phase: TRAIN }
+    type: "DummyData"
+    top: "noiseGen11"
+    dummy_data_param {
+        num: 8
+        channels: 512
+        height: 1
+        width: 1
+        data_filler{
+            type: "uniform"
+            min: 0.990
+            max: 1.010
+        }
+    }
+}
+
+layer {
+    name: "noiseMult11"
+    include { phase: TRAIN }
+    type: "Eltwise"
+    bottom: "noiseGen11"
+    bottom: "Conv11"
+    top: "noiseMult11"
+    eltwise_param{
+        operation: PROD
+    }
+}
+
+########################################
+#Fully Connected layer
+########################################
+
+#98 Landmark top
+
+layer {
+    include { phase: TRAIN }
+    name: "Dense_98"
+    type: "InnerProduct"
+    bottom: "noiseMult11"
+    top: "Dense_98"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    inner_product_param {
+        num_output: 196
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+    include { phase: TEST }
+    name: "Dense_98"
+    type: "InnerProduct"
+    bottom: "Conv11"
+    top: "Dense_98"
+    inner_product_param {
+        num_output: 196
+    }
+}
+
+layer {
+    name: "lossweight_98"
+    type: "Scale"
+    bottom: "lossgate_98"
+    bottom: "lossweight"
+    top: "lossweight_98"
+    scale_param {
+        axis: 0
+    }
+}
+
+layer {
+    name: "Scaled_Dense_98"
+    type: "Scale"
+    bottom: "Dense_98"
+    bottom: "lossweight_98"
+    top: "Scaled_Dense_98"
+    scale_param {
+        axis: 0
+    }
+}
+
+layer {
+    name: "Scaled_landmarks_98"
+    type: "Scale"
+    bottom: "landmarks_98"
+    bottom: "lossweight_98"
+    top: "Scaled_landmarks_98"
+    scale_param {
+        axis: 0
+    }
+}
+
+layer {
+    name: "loss_98"
+    type: "EuclideanLoss"
+    bottom: "Scaled_Dense_98"
+    bottom: "Scaled_landmarks_98"
+    top: "loss_98"
+    loss_weight: 0.0
+}
+
+#68 Landmark top
+
+layer {
+    include { phase: TRAIN }
+    name: "Dense_68"
+    type: "InnerProduct"
+    bottom: "noiseMult11"
+    top: "Dense_68"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    inner_product_param {
+        num_output: 136
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+    include { phase: TRAIN }
+    name: "lossweight_68"
+    type: "Scale"
+    bottom: "lossgate_68"
+    bottom: "lossweight"
+    top: "lossweight_68"
+    scale_param {
+        axis: 0
+    }
+}
+
+layer {
+    include { phase: TRAIN }
+    name: "Scaled_Dense_68"
+    type: "Scale"
+    bottom: "Dense_68"
+    bottom: "lossweight_68"
+    top: "Scaled_Dense_68"
+    scale_param {
+        axis: 0
+    }
+}
+
+layer {
+    include { phase: TRAIN }
+    name: "Scaled_landmarks_68"
+    type: "Scale"
+    bottom: "landmarks_68"
+    bottom: "lossweight_68"
+    top: "Scaled_landmarks_68"
+    scale_param {
+        axis: 0
+    }
+}
+
+layer {
+    include { phase: TRAIN }
+    name: "loss_68"
+    type: "EuclideanLoss"
+    bottom: "Scaled_Dense_68"
+    bottom: "Scaled_landmarks_68"
+    top: "loss_68"
+    loss_weight: 0.0
+}
+
+#Total landmark loss
+
+layer {
+    name: "landmark_loss"
+    include { phase: TRAIN }
+    type: "Eltwise"
+    bottom: "loss_68"
+    bottom: "loss_98"
+    top: "landmark_loss"
+    eltwise_param{
+        operation: SUM
+    }
+    loss_weight: 0.0
+}
+
+#98 landmark attributes top
+
+layer {
+    include { phase: TRAIN }
+    name: "Dense_attr_98"
+    type: "InnerProduct"
+    bottom: "noiseMult11"
+    top: "Dense_attr_98"
+    param {
+        lr_mult: 1
+        decay_mult: 0
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    inner_product_param {
+        num_output: 5
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0.0
+        }
+    }
+}
+
+layer {
+    include { phase: TRAIN }
+    name: "Sigmoid_attr_98"
+    type: "Sigmoid"
+    bottom: "Dense_attr_98"
+    top: "Sigmoid_attr_98"
+}
+
+layer {
+    include { phase: TRAIN }
+    name: "Scaled_Sigmoid_attr_98"
+    type: "Scale"
+    bottom: "Sigmoid_attr_98"
+    bottom: "lossgate_98"
+    top: "Scaled_Sigmoid_attr_98"
+    scale_param {
+        axis: 0
+    }
+}
+
+layer {
+    include { phase: TRAIN }
+    name: "Scaled_attributes_98"
+    type: "Scale"
+    bottom: "attributes_98"
+    bottom: "lossgate_98"
+    top: "Scaled_attributes_98"
+    scale_param {
+        axis: 0
+    }
+}
+
+layer {
+    include { phase: TRAIN }
+    name: "attribute_loss"
+    type: "EuclideanLoss"
+    bottom: "Scaled_attributes_98"
+    bottom: "Scaled_Sigmoid_attr_98"
+    top: "attribute_loss"
+    loss_weight: 0.0
+}
+
+#Multitask loss layer
+
+layer {
+  include { phase: TRAIN }
+  type: "Python"
+  name: "loss"
+  top: "loss"
+  bottom: "landmark_loss"
+  bottom: "attribute_loss"
+  python_param {
+    module: "MultitaskLoss_2"
+    layer: "MultitaskLoss_2"
+  }
+  loss_weight: 1
+}

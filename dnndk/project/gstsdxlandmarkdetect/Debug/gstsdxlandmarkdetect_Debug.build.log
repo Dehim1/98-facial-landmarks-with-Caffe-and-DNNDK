@@ -1,0 +1,7 @@
+09:07:23 **** Clean-only build of configuration Debug for project gstsdxlandmarkdetect ****
+make clean 
+rm -rf  ./src/densebox.o ./src/gstsdxlandmarkdetect.o  ./src/densebox.d ./src/gstsdxlandmarkdetect.d  libgstsdxlandmarkdetect.so
+ 
+
+09:07:24 Build Finished (took 524ms)
+

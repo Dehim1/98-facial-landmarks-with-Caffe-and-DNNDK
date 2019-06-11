@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+environment/project/xilinx.gnu.arm.a53.linux.sharedlib.debug.1878646024/SYSROOT/delimiter=\:
+environment/project/xilinx.gnu.arm.a53.linux.sharedlib.debug.1878646024/SYSROOT/operation=replace
+environment/project/xilinx.gnu.arm.a53.linux.sharedlib.debug.1878646024/SYSROOT/value=/home/dehim/install/Xilinx/SDx/2018.3/platforms/zcu102-rv-ss-2018-3-dnndk/zcu102_rv_ss/sw/a53_linux/a53_linux/sysroot/aarch64-xilinx-linux
+environment/project/xilinx.gnu.arm.a53.linux.sharedlib.debug.1878646024/append=true
+environment/project/xilinx.gnu.arm.a53.linux.sharedlib.debug.1878646024/appendContributed=true
