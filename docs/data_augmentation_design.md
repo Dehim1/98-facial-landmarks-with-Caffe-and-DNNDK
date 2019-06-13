@@ -14,6 +14,7 @@ For information on how to use the data augmentation scripts, refer to [data_augm
 Each image and its landmarks will first be randomly mirrored, rotated, translated and scaled. The amount by which this is done is randomly determined following a predefined uniform distribution. The reason this is done randomly is such that every image is augmented differently. This will allow for a highly varied dataset, without it being excessively large. Mirroring, rotation, translation and scaling were chosen, because the developers of the WFLW dataset also used these augmentations when training their neural network<sup><a href="#ref-3">[3]</a></sup>.
 
 Data augmentation procedes as follows:
+
 <a id="figure-1">
     <figure class="image">
         <a href="./images/data_augmentation.png">
@@ -21,6 +22,7 @@ Data augmentation procedes as follows:
         </a>
     </figure>
 </a>
+
 Figure 1: Image visualizing the data augmentation process.
 
 <a id="1-through-12"></a>

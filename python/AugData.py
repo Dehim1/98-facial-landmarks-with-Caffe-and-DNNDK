@@ -156,7 +156,8 @@ def GenerateDataset(data, N_threads_max, N_augmentations, augmentationRange, img
         F_data, i = WriteHDF5(F_data, i, maxFileSize, h5_dir, h5_prefix, txt_file) #13. and 14.
 
 #Get dataset
-dataset_dir = '/home/dehim/Downloads/datasets/WFLW/WFLW_images'
+wflw_dir = '/home/dehim/Downloads/datasets/WFLW/WFLW_images'
+ibug_dir = '/home/dehim/Downloads/datasets/68_landmark'
 h5_dir = '/home/dehim/Downloads/datasets/landmark_h5'
 prefix_test = 'test_aug'
 prefix_train = 'train_aug'
@@ -164,9 +165,9 @@ prefix_train = 'train_aug'
 imgSize = (80, 80)
 maxFileSize = 7500
 
-N_threads = 3
-N_testAugmentations = 9
-N_trainAugmentations = 129
+N_threads = 4
+N_testAugmentations = 8
+N_trainAugmentations = 128
 
 mirror = True
 angleRange = (-55.0, 55.0)
@@ -179,9 +180,9 @@ augmentationRange = (mirror, angleRange, (xTranslateRange, yTranslateRange), (xS
 test_data = []
 train_data = []
 
-test_data.append(GetData_2.GetData_98(os.path.join(dataset_dir, 'list_98pt_rect_attr_test.txt')))
-train_data.append(GetData_2.GetData_98(os.path.join(dataset_dir, 'list_98pt_rect_attr_train.txt')))
-train_data.append(GetData_2.GetData_68('/home/dehim/Downloads/datasets/68_landmark'))
+test_data.append(GetData.GetData_98(os.path.join(wflw_dir, 'list_98pt_rect_attr_test.txt')))
+train_data.append(GetData.GetData_98(os.path.join(wflw_dir, 'list_98pt_rect_attr_train.txt')))
+train_data.append(GetData.GetData_68(ibug_dir))
 
 GenerateDataset(test_data, N_threads, N_testAugmentations, augmentationRange, imgSize, maxFileSize, h5_dir, prefix_test)
 GenerateDataset(train_data, N_threads, N_trainAugmentations, augmentationRange, imgSize, maxFileSize, h5_dir, prefix_train)

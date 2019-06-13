@@ -9,17 +9,18 @@ import random
 
 from BBox import BBox 
 
-def ReadHDF5(i, h5_dir, h5_prefix):
-    h5_file = os.path.join(h5_dir, h5_prefix + '_' + str(i) + '.h5')
+def ReadHDF5(idx, h5_dir, h5_prefix):
+    h5_file = os.path.join(h5_dir, h5_prefix + '_' + str(idx) + '.h5')
     F_data = h5py.File(h5_file, 'r')
     return F_data
 
 h5_dir = '/home/dehim/Downloads/datasets/landmark_h5'
 prefix_test = 'test_aug'
 prefix_train = 'train_aug'
-F_data = ReadHDF5(0, h5_dir, prefix_train)
-
+h5_file_idx = 0
+F_data = ReadHDF5(h5_file_idx, h5_dir, prefix_train)
 i = 2
+
 for d in F_data:
     print(d)
 img = F_data['data'][i]
