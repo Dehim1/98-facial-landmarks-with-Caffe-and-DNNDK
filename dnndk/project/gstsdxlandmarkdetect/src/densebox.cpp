@@ -180,7 +180,7 @@ void DenseBox::getOriginalFaceBoxes(DPUTensor *outTensor, int tileH, int tileW, 
  */
 void DenseBox::Run(DPUTask *task, const Mat &img, vector<array<float, 5>>* result) {
   cv::Mat dpuImg;
-  _T(cv::resize(img, dpuImg, cv::Size(dpuGetInputTensorWidth(task, input_node_.c_str()), dpuGetInputTensorHeight(task, input_node_.c_str())), 0, 0, cv::INTER_LINEAR));
+  _T(cv::resize(img, dpuImg, cv::Size(dpuGetInputTensorWidth(task, input_node_.c_str()), dpuGetInputTensorHeight(task, input_node_.c_str())), 0, 0, cv::INTER_NEAREST));
   // send input image to DPU
   _T(dpuSetInputImage2(task, input_node_.c_str(), dpuImg));
 

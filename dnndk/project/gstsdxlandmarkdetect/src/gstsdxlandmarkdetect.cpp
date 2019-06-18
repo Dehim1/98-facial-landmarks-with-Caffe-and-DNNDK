@@ -132,10 +132,10 @@ static GstFlowReturn gst_sdx_landmark_detect_process_frames_ip(GstSdxBase *base,
             GST_VIDEO_FRAME_PLANE_DATA(&frame->vframe, 0),
             GST_VIDEO_FRAME_PLANE_STRIDE(&frame->vframe, 0));
 
-  vector<array<float, 5>> landmarkDetectResult;
-  p->densebox.Run(task, image, &landmarkDetectResult);
+  vector<array<float, 5>> faceDetectResult;
+  p->densebox.Run(task, image, &faceDetectResult);
 
-  for (auto iter = landmarkDetectResult.begin(); iter != landmarkDetectResult.end(); ++iter)
+  for (auto iter = faceDetectResult.begin(); iter != faceDetectResult.end(); ++iter)
   {
 	  BBox bbox = BBox::FromBoundaries((*iter)[0], (*iter)[1], (*iter)[2], (*iter)[3]);
 	  p->landmarkdetector.Run(&image, &bbox);

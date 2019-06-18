@@ -14,7 +14,7 @@ public:
 	float m_width;
 	float m_height;
 public:
-	static BBox FromBoundaries(float x1, float x2, float y1, float y2)
+	static BBox FromBoundaries(float x1, float y1, float x2, float y2)
 	{
 		BBox bbox;
 		bbox.m_x1 = x1;

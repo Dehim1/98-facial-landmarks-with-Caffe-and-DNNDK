@@ -55,6 +55,7 @@ public:
 		m_task = dpuCreateTask(m_kernel, 0);
 		m_nLandmarks = dpuGetOutputTensorChannel(m_task, m_outputNode.c_str())/2;
 		m_landmarks = new float[2*m_nLandmarks];
+		dpuDestroyTask(m_task);
 	}
 
 	void Finalize()
@@ -95,8 +96,8 @@ public:
 
 	void ClipBBox()
 	{
-		float width = m_srcImg->cols;
-		float height = m_srcImg->rows;
+		float width = m_srcImg->cols-1;
+		float height = m_srcImg->rows-1;
 		float x1 = floor(m_bbox->m_x1);
 		float y1 = floor(m_bbox->m_y1);
 		float x2 = ceil(m_bbox->m_x2);
@@ -114,7 +115,7 @@ public:
 		m_dpuImg = (*m_srcImg)(roi);
 	}
 
-	void ResizeImg(int interpolation=cv::INTER_LINEAR)
+	void ResizeImg(int interpolation=cv::INTER_NEAREST)
 	{
 		int width = dpuGetInputTensorWidth(m_task, m_inputNode.c_str());
 		int height = dpuGetInputTensorHeight(m_task, m_inputNode.c_str());

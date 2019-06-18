@@ -39,7 +39,7 @@ This new loss function has extra learnable parameters sigma, which like the weig
 
 From this loss function we derive:
 
-<a id="figure-3">
+<a id="figure-2">
     <figure class="image">
         <a href="./images/multitaskloss_deriv.png">
             <img src="./images/multitaskloss_deriv.png" alt="drawing">
